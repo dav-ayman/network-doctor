@@ -1,0 +1,19 @@
+name: Bug
+description: Something in the diagnosis or a driver is wrong
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: cmd
+    attributes:
+      label: Command and output (netdoc masks secrets, but please check before pasting)
+      render: shell
+  - type: input
+    id: env
+    attributes:
+      label: OS, Python version, router model

@@ -1,0 +1,43 @@
+name: Add my router
+description: Help add or verify support for a router, MiFi or 5G CPE
+labels: ["router-support"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks! Please run `python3 netdoc.py capture` (it only uses read-only requests and never logs in) and attach
+        the JSON file it saves. **Open it first**: MACs, SSIDs, public IPs, serials and secrets are masked, but you
+        should see for yourself that nothing private is left.
+  - type: input
+    id: model
+    attributes:
+      label: Brand and exact model (and hardware version, e.g. "Archer C6 v3.2")
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: Firmware version (from the router's status page)
+  - type: input
+    id: isp
+    attributes:
+      label: ISP / operator branded firmware? (e.g. "Vodafone", "none")
+  - type: dropdown
+    id: state
+    attributes:
+      label: What happens today?
+      options:
+        - Not detected (no candidate driver)
+        - Detected as an experimental driver, and it WORKS (please confirm so we can mark it verified)
+        - Detected, but login or status fails
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Output of `netdoc.py router detect` (and `router status` if a driver matched)
+      render: json
+  - type: textarea
+    id: capture
+    attributes:
+      label: Attach the capture file (drag and drop)

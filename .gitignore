@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.DS_Store
+.venv/
+# local captures / backups never belong in the repo
+*.capture.json
+docs/media/build/

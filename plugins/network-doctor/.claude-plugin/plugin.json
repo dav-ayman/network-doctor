@@ -1,0 +1,10 @@
+{
+  "name": "network-doctor",
+  "version": "0.1.0",
+  "description": "Diagnose bad internet end to end (Wi-Fi, bufferbloat, call quality, MTU, DNS, 4G/5G signal) and read or tune home routers: Huawei, ZTE, TP-Link, ASUS, FRITZ!Box, MikroTik, OpenWrt.",
+  "author": { "name": "dav-ayman", "url": "https://github.com/dav-ayman" },
+  "homepage": "https://github.com/dav-ayman/network-doctor",
+  "repository": "https://github.com/dav-ayman/network-doctor",
+  "license": "MIT",
+  "keywords": ["network", "wifi", "router", "bufferbloat", "latency", "voip", "5g", "lte", "diagnostics"]
+}

@@ -1,0 +1,49 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: ["3.9", "3.13"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: unit tests (stdlib only, no installs)
+        run: python -m unittest discover -s tests -t . -v
+      - name: CLI smoke test (demo mode)
+        run: |
+          python plugins/network-doctor/skills/network-doctor/scripts/netdoc.py --version
+          python plugins/network-doctor/skills/network-doctor/scripts/netdoc.py diagnose --demo --no-color
+          python plugins/network-doctor/skills/network-doctor/scripts/netdoc.py router drivers > /dev/null
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install ruff==0.6.9
+      - run: ruff check --select E9,F63,F7,F82,F401,F841 plugins tests
+
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

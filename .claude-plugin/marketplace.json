@@ -1,0 +1,22 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "network-doctor",
+  "description": "Find out why your internet feels bad, and fix it at the router.",
+  "owner": {
+    "name": "dav-ayman",
+    "url": "https://github.com/dav-ayman"
+  },
+  "plugins": [
+    {
+      "name": "network-doctor",
+      "description": "Diagnose bad internet end to end (Wi-Fi, bufferbloat, call quality, MTU, DNS, 4G/5G signal) and read or tune home routers: Huawei, ZTE, TP-Link, ASUS, FRITZ!Box, MikroTik, OpenWrt.",
+      "version": "0.1.0",
+      "author": { "name": "dav-ayman", "url": "https://github.com/dav-ayman" },
+      "source": "./plugins/network-doctor",
+      "category": "productivity",
+      "homepage": "https://github.com/dav-ayman/network-doctor",
+      "license": "MIT",
+      "keywords": ["network", "wifi", "router", "bufferbloat", "latency", "voip", "5g", "lte", "diagnostics"]
+    }
+  ]
+}
