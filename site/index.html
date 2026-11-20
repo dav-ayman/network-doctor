@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>network-doctor: why is my internet bad? Ask Claude.</title>
+<meta name="description" content="A Claude Code plugin and Claude Desktop extension that measures why your internet feels bad (Wi-Fi, bufferbloat, call quality, 4G/5G signal) and fixes it at the router, with your approval.">
+<link rel="canonical" href="https://dav-ayman.github.io/network-doctor/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="network-doctor: why is my internet bad? Ask Claude.">
+<meta property="og:description" content="Measures Wi-Fi, lag under load, call quality and 4G/5G signal, then fixes it at your router with your approval. For Claude Code and Claude Desktop.">
+<meta property="og:url" content="https://dav-ayman.github.io/network-doctor/">
+<meta property="og:image" content="https://dav-ayman.github.io/network-doctor/media/social-preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://dav-ayman.github.io/network-doctor/media/social-preview.png">
+<meta name="theme-color" content="#0d1117">
+<link rel="icon" type="image/png" href="media/icon.png">
+<style>
+:root{
+  --bg:#ffffff;--bg2:#f6f8fa;--card:#ffffff;--fg:#1f2328;--mut:#59636e;--line:#d1d9e0;
+  --acc:#1a7f37;--acc2:#2da44e;--warn:#cf222e;--amber:#9a6700;--code:#f6f8fa;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0d1117;--bg2:#010409;--card:#151b23;--fg:#e6edf3;--mut:#9198a1;--line:#30363d;
+  --acc:#3fb950;--acc2:#3fb950;--warn:#f85149;--amber:#d29922;--code:#151b23;}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+nav{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:20px;height:58px}
+.brand{display:flex;align-items:center;gap:10px;font:700 17px var(--mono);color:var(--fg)}
+.brand img{width:28px;height:28px;border-radius:7px}
+nav .links{margin-left:auto;display:flex;gap:18px;font-size:15px}
+nav .links a{color:var(--mut)}nav .links a:hover{color:var(--fg);text-decoration:none}
+.gh{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:5px 11px;color:var(--fg)!important}
+@media (max-width:720px){nav .links a:not(.gh){display:none}}
+
+header.hero{padding:72px 0 40px;text-align:center}
+.eyebrow{display:inline-block;max-width:100%;font:600 13px var(--mono);color:var(--acc);border:1px solid var(--line);border-radius:99px;padding:4px 12px;margin-bottom:22px}
+h1{font:800 clamp(34px,6vw,62px)/1.08 var(--sans);letter-spacing:-.02em;margin:0 0 18px}
+h1 .q{color:var(--mut);font-weight:700}
+.sub{font-size:clamp(17px,2.2vw,20px);color:var(--mut);max-width:720px;margin:0 auto 30px}
+.cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;border-radius:10px;padding:12px 20px;border:1px solid var(--line);color:var(--fg);background:var(--card)}
+.btn.primary{background:var(--acc2);border-color:var(--acc2);color:#fff}
+.btn:hover{text-decoration:none;filter:brightness(1.07)}
+.quote{margin:44px auto 0;max-width:820px}
+.term{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#0d1117;box-shadow:0 20px 50px -20px rgba(0,0,0,.45)}
+.term img,.term video{display:block;width:100%;height:auto}
+
+section{padding:64px 0;border-top:1px solid var(--line)}
+section.alt{background:var(--bg2)}
+h2{font:800 clamp(26px,3.6vw,36px)/1.15 var(--sans);letter-spacing:-.01em;margin:0 0 10px}
+.lead{color:var(--mut);margin:0 0 32px;max-width:720px;font-size:18px}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+.card h3{margin:0 0 6px;font-size:17px}
+.card p{margin:0;color:var(--mut);font-size:15px}
+.ico{font:700 13px var(--mono);color:var(--acc);margin-bottom:10px;display:block}
+
+.split{display:grid;grid-template-columns:1fr 1.2fr;gap:36px;align-items:center}
+@media (max-width:860px){.split{grid-template-columns:1fr}}
+.bars{display:grid;gap:10px;margin-top:8px}
+.bar{display:grid;grid-template-columns:110px 1fr 70px;align-items:center;gap:12px;font:14px var(--mono)}
+.bar .t{height:16px;border-radius:5px;background:var(--line);overflow:hidden}
+.bar .t i{display:block;height:100%;border-radius:5px;animation:grow 1.6s cubic-bezier(.2,.8,.2,1) both}
+@keyframes grow{from{width:0!important}}
+@media (prefers-reduced-motion:reduce){.bar .t i{animation:none}}
+@media (max-width:520px){.bar{grid-template-columns:86px 1fr 58px;font-size:13px}header.hero{padding-top:44px}.btn{padding:10px 14px}}
+.note{font-size:14px;color:var(--mut);margin-top:14px}
+
+.tabs{display:flex;gap:6px;margin-bottom:-1px;flex-wrap:wrap}
+.tab{font:600 15px var(--sans);padding:10px 16px;border:1px solid var(--line);border-bottom:0;border-radius:10px 10px 0 0;background:transparent;color:var(--mut);cursor:pointer}
+.tab[aria-selected=true]{background:var(--card);color:var(--fg)}
+.panel{border:1px solid var(--line);border-radius:0 12px 12px 12px;background:var(--card);padding:22px}
+.panel[hidden]{display:none}
+.panel ol{margin:0;padding-left:20px}.panel li{margin:6px 0}
+pre{position:relative;margin:12px 0;background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow:auto;font:14px/1.6 var(--mono)}
+code{font-family:var(--mono);font-size:.92em;overflow-wrap:anywhere}
+pre code{overflow-wrap:normal}
+.copy{position:absolute;top:8px;right:8px;font:12px var(--sans);border:1px solid var(--line);background:var(--card);color:var(--mut);border-radius:6px;padding:3px 8px;cursor:pointer}
+
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}
+.tag{display:inline-block;font:600 12px var(--mono);padding:2px 8px;border-radius:99px;white-space:nowrap}
+.tag.v{color:var(--acc);border:1px solid var(--acc)}
+.tag.x{color:var(--amber);border:1px solid var(--amber)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.tablewrap table tr:last-child td{border-bottom:0}
+
+.steps{counter-reset:s;display:grid;gap:14px}
+.step{display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:start}
+.step:before{counter-increment:s;content:counter(s);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--acc2);color:#fff;font-weight:700}
+.step h3{margin:4px 0 2px;font-size:17px}.step p{margin:0;color:var(--mut)}
+
+details{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:14px 18px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:600}
+details p{color:var(--mut);margin:10px 0 0}
+footer{border-top:1px solid var(--line);padding:36px 0;color:var(--mut);font-size:14px}
+footer .wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <a class="brand" href="#"><img src="media/icon.png" alt="">network-doctor</a>
+  <div class="links">
+    <a href="#how">How it works</a><a href="#routers">Routers</a><a href="#install">Install</a><a href="#safety">Safety</a><a href="#faq">FAQ</a>
+    <a class="gh" href="https://github.com/dav-ayman/network-doctor">★ GitHub</a>
+  </div>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <span class="eyebrow">Claude Code plugin · Claude Desktop extension · MIT</span>
+  <h1>Why is my internet bad?<br><span class="q">Ask Claude.</span></h1>
+  <p class="sub">network-doctor measures your Wi-Fi, how much lag you get while the line is busy, call quality and your 4G/5G signal. Then it reads your router and proposes a fix. Nothing changes until you say yes.</p>
+  <div class="cta">
+    <a class="btn primary" href="#install">Install</a>
+    <a class="btn" href="media/hero.mp4">▶ 1-minute video</a>
+    <a class="btn" href="https://github.com/dav-ayman/network-doctor">View source</a>
+  </div>
+  <div class="quote term"><video src="media/diagnose.mp4" poster="media/diagnose-poster.jpg" autoplay muted loop playsinline aria-label="netdoc diagnose: a report ranking bufferbloat, weak LTE signal and a crowded Wi-Fi channel"></video></div>
+</div></header>
+
+<section id="problem" class="alt"><div class="wrap split">
+  <div>
+    <h2>"My voice keeps breaking in meetings."</h2>
+    <p class="lead">Speed tests say the line is fine. The real culprit is usually <b>lag under load</b>: when anything uploads or downloads, the router queues your voice packets behind it. network-doctor measures exactly that, on the same UDP path a call uses.</p>
+    <p class="note">The numbers on the right come from the built-in demo network, the same synthetic data used in every recording on this page.</p>
+  </div>
+  <div class="card">
+    <span class="ico">call probe · p95 latency · 10 packets/s</span>
+    <div class="bars">
+      <div class="bar"><span>idle</span><span class="t"><i style="width:9%;background:var(--acc2)"></i></span><span>63 ms</span></div>
+      <div class="bar"><span>uploading</span><span class="t"><i style="width:100%;background:var(--warn)"></i></span><span>702 ms</span></div>
+      <div class="bar"><span>downloading</span><span class="t"><i style="width:35%;background:var(--amber)"></i></span><span>245 ms</span></div>
+    </div>
+    <p class="note">While uploading, 61% of voice packets arrive later than 150 ms, which is too late to play. Bufferbloat grade: <b style="color:var(--warn)">F</b>.</p>
+  </div>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <h2>How it works</h2>
+  <p class="lead">One read-only checkup. You get ranked findings, each with evidence and a fix.</p>
+  <img src="media/pipeline.svg" alt="Wi-Fi, link, load, calls, MTU and DNS, router, report" style="width:100%;height:auto;margin-bottom:28px">
+  <div class="grid">
+    <div class="card"><span class="ico">wifi</span><h3>Wi-Fi</h3><p>Signal, noise, channel and width, plus the neighbouring networks crowding it. It suggests the least busy channel.</p></div>
+    <div class="card"><span class="ico">bloat</span><h3>Lag under load</h3><p>Measures latency while idle, while uploading and while downloading, and grades bufferbloat from A+ to F.</p></div>
+    <div class="card"><span class="ico">call</span><h3>Call quality</h3><p>Loss, jitter and late packets from a voice-like UDP stream to the STUN servers Meet and others use.</p></div>
+    <div class="card"><span class="ico">mtu · dns</span><h3>Black holes</h3><p>Finds PPPoE/VPN MTU problems that make some sites hang, and slow or failing DNS.</p></div>
+    <div class="card"><span class="ico">router</span><h3>Your router</h3><p>4G/5G RSRP, RSRQ, SINR and band; Wi-Fi config; clients; QoS. Read straight from the router's own API.</p></div>
+    <div class="card"><span class="ico">fix</span><h3>Fix, then prove it</h3><p>It shows a plan, applies it after you approve, saves a backup, then re-measures so you see the before and after.</p></div>
+  </div>
+</div></section>
+
+<section id="demo" class="alt"><div class="wrap split">
+  <div>
+    <h2>Talks to your router</h2>
+    <p class="lead">It reads the cellular signal, Wi-Fi and clients. Every change starts as a plan showing the current and new values. Nothing is sent until you approve it.</p>
+    <div class="steps">
+      <div class="step"><div><h3>Detect</h3><p>Identifies the router with read-only requests. No login.</p></div></div>
+      <div class="step"><div><h3>Read</h3><p>Logs in with the password from your OS keychain, and logs out after.</p></div></div>
+      <div class="step"><div><h3>Plan, approve, apply</h3><p>Automatic backup, plus a one-line revert.</p></div></div>
+    </div>
+  </div>
+  <div class="term"><video src="media/router.mp4" poster="media/router-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="router status with LTE and 5G signal, then a Wi-Fi channel change plan"></video></div>
+</div></section>
+
+<section id="routers"><div class="wrap">
+  <h2>Supported routers</h2>
+  <p class="lead"><span class="tag v">verified</span> means tested on real hardware. <span class="tag x">experimental</span> means written from public protocol docs and tested against synthetic answers. Own one? Tell us if it works: that's how a driver becomes verified.</p>
+  <div class="tablewrap"><table>
+    <tr><th>Family</th><th>Covers</th><th>Tier</th></tr>
+    <tr><td>Huawei HiLink</td><td>5G CPE 5s/Pro, B310-B818, E5577/E5785 MiFi, E3372</td><td><span class="tag v">verified</span></td></tr>
+    <tr><td>ZTE MiFi (goform)</td><td>U20, MU5001, MF971 and most ZTE MiFis</td><td><span class="tag v">verified</span></td></tr>
+    <tr><td>ZTE ZXHN</td><td>H188A, and likely H298A, F670L and ISP-branded gateways</td><td><span class="tag v">verified</span></td></tr>
+    <tr><td>Huawei home gateway</td><td>HG630 V2, HG633, HG658</td><td><span class="tag v">verified</span></td></tr>
+    <tr><td>TP-Link Archer</td><td>AX / C-series web UI</td><td><span class="tag x">experimental</span></td></tr>
+    <tr><td>TP-Link LTE</td><td>Archer MR200/MR600, TL-MR6400/MR6500</td><td><span class="tag x">experimental</span></td></tr>
+    <tr><td>TP-Link legacy</td><td>Older TL-WR / Archer <code>/userRpm/</code> UI (read-only)</td><td><span class="tag x">experimental</span></td></tr>
+    <tr><td>ASUS</td><td>ASUSWRT and Asuswrt-Merlin</td><td><span class="tag x">experimental</span></td></tr>
+    <tr><td>AVM FRITZ!Box</td><td>TR-064</td><td><span class="tag x">experimental</span></td></tr>
+    <tr><td>MikroTik</td><td>RouterOS 7 REST, including the LTE monitor</td><td><span class="tag x">experimental</span></td></tr>
+    <tr><td>OpenWrt</td><td>ubus JSON-RPC (LuCI builds), SQM status</td><td><span class="tag x">experimental</span></td></tr>
+  </table></div>
+  <p class="note">Router not listed? <code>netdoc.py capture</code> saves a masked snapshot of its web API, with no secrets, MACs, SSIDs or public IPs. Attach it to an <a href="https://github.com/dav-ayman/network-doctor/issues/new?template=router-support.yml">Add my router</a> issue.</p>
+</div></section>
+
+<section id="install" class="alt"><div class="wrap">
+  <h2>Install</h2>
+  <p class="lead">Nothing to <code>pip install</code>: it needs only Python 3.9+, which ships with macOS developer tools and every Linux. It runs on your computer, so it measures your real network.</p>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" aria-controls="p-code" id="t-code">Claude Code</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-desk" id="t-desk">Claude Desktop</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-cli" id="t-cli">Just the CLI</button>
+  </div>
+  <div class="panel" role="tabpanel" id="p-code" aria-labelledby="t-code">
+    <pre><code>/plugin marketplace add dav-ayman/network-doctor
+/plugin install network-doctor@network-doctor</code></pre>
+    <p>Then describe the problem in plain words: <i>"my calls keep breaking up"</i>, <i>"why is my Wi-Fi slow?"</i>, <i>"check my 5G router's signal"</i>. You get the skill and 16 MCP tools.</p>
+  </div>
+  <div class="panel" role="tabpanel" id="p-desk" aria-labelledby="t-desk" hidden>
+    <ol>
+      <li>Download <a href="https://github.com/dav-ayman/network-doctor/releases/latest"><code>network-doctor-&lt;version&gt;.mcpb</code></a> from the latest release.</li>
+      <li>Double-click it, or open Claude Desktop, go to Settings > Extensions and drag it in.</li>
+      <li>Click Install, then ask: <i>"my voice keeps breaking up in meetings, what's wrong?"</i></li>
+    </ol>
+    <p class="note">When Claude needs your router password, it opens a Terminal window where you type it into your OS keychain. The password never goes into the chat.</p>
+  </div>
+  <div class="panel" role="tabpanel" id="p-cli" aria-labelledby="t-cli" hidden>
+    <pre><code>git clone https://github.com/dav-ayman/network-doctor
+cd network-doctor
+python3 plugins/network-doctor/skills/network-doctor/scripts/netdoc.py diagnose --demo</code></pre>
+    <p><code>--demo</code> runs on a synthetic network. Drop it to measure yours. <code>netdoc.py --help</code> lists every command.</p>
+  </div>
+</div></section>
+
+<section id="safety"><div class="wrap">
+  <h2>Built to be safe with your router</h2>
+  <p class="lead">Routers lock the admin account after a few wrong passwords, and a bad setting can cut you off. So the rules are strict.</p>
+  <div class="grid">
+    <div class="card"><span class="ico">keychain</span><h3>Passwords never touch the chat</h3><p>They live in the macOS Keychain or Linux Secret Service, and every output is masked.</p></div>
+    <div class="card"><span class="ico">bound</span><h3>Tied to your router</h3><p>Each stored password is bound to the router's hardware address, so your home password is never offered to the café's 192.168.1.1.</p></div>
+    <div class="card"><span class="ico">no-retry</span><h3>No lockouts</h3><p>A rejected password is remembered, and netdoc won't try again until you fix it. That's one attempt per run, ever.</p></div>
+    <div class="card"><span class="ico">plan</span><h3>Plan before change</h3><p>Every write shows the current and new values first. It runs only after you approve, with a backup and an undo.</p></div>
+  </div>
+</div></section>
+
+<section id="faq" class="alt"><div class="wrap">
+  <h2>FAQ</h2>
+  <details><summary>Does it work with Claude on the web?</summary><p>Not for measuring your network. Claude on the web runs code in a cloud sandbox, which can't see your Wi-Fi or router. Use Claude Code or the Claude Desktop extension: both run locally.</p></details>
+  <details><summary>Will the test slow my connection?</summary><p>For about 45 seconds the full checkup saturates your upload, then your download. That's how it measures lag under load. Use the quick mode, or skip the load test, if someone is on a call.</p></details>
+  <details><summary>Which operating systems?</summary><p>macOS is first class, and Linux is supported (Wi-Fi details via <code>iw</code>/<code>nmcli</code>). Windows isn't supported yet.</p></details>
+  <details><summary>Does it send my data anywhere?</summary><p>No telemetry. Measurements reach public STUN servers, Cloudflare's speed endpoints (or Apple's networkQuality on macOS) and 1.1.1.1. Router traffic goes only to your router.</p></details>
+  <details><summary>My router isn't supported. Can you add it?</summary><p>Very likely. Run <code>netdoc.py capture</code> and open an "Add my router" issue. The masked capture is enough for someone to write a driver without owning the hardware.</p></details>
+</div></section>
+
+<footer><div class="wrap">
+  <span>network-doctor · MIT license · not affiliated with any router vendor.</span>
+  <span><a href="https://github.com/dav-ayman/network-doctor">GitHub</a> · <a href="https://github.com/dav-ayman/network-doctor/releases">Releases</a> · <a href="https://github.com/dav-ayman/network-doctor/blob/main/CONTRIBUTING.md">Contribute</a> · <a href="https://github.com/dav-ayman/network-doctor/blob/main/SECURITY.md">Security</a></span>
+</div></footer>
+
+<script>
+document.querySelectorAll('pre').forEach(function (pre) {
+  var b = document.createElement('button'); b.className = 'copy'; b.type = 'button'; b.textContent = 'Copy';
+  b.addEventListener('click', function () {
+    var t = pre.querySelector('code').innerText;
+    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () {
+      b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1500);
+    }, function () { b.textContent = 'Select & copy'; });
+  });
+  pre.appendChild(b);
+});
+var tabs = document.querySelectorAll('.tab');
+tabs.forEach(function (tab) {
+  tab.addEventListener('click', function () {
+    tabs.forEach(function (t) {
+      var on = t === tab; t.setAttribute('aria-selected', on);
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+  });
+});
+if (/Mac|Win/.test(navigator.platform) && location.hash !== '#install') { /* keep Claude Code as the default tab */ }
+</script>
+</body>
+</html>

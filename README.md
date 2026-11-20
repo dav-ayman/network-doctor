@@ -12,6 +12,8 @@
   <img alt="MIT" src="https://img.shields.io/badge/license-MIT-black">
 </p>
 
+<p align="center"><b><a href="https://dav-ayman.github.io/network-doctor/">dav-ayman.github.io/network-doctor</a></b></p>
+
 **network-doctor** is a [Claude Code](https://claude.com/claude-code) plugin that finds out *why* your internet feels bad, then fixes it at the router, with your approval at every step.
 
 > "My voice keeps breaking in meetings."
