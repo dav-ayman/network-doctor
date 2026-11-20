@@ -7,7 +7,12 @@ description: Diagnose bad internet end to end and fix it at the router. Use when
 
 Measure first, explain with evidence, then propose fixes. Only change router settings after the user approves the exact change.
 
-All tools are in one CLI, `scripts/netdoc.py`, relative to this skill's directory. It needs Python 3.9+ and nothing else. Run it as `python3 <skill-dir>/scripts/netdoc.py <command>`. Commands print JSON. `diagnose` prints a report, or JSON with `--json`.
+**Two ways to run the same tools:**
+
+- **MCP tools** (`network_diagnose`, `latency_under_load`, `wifi_status`, `router_status`, `router_write`, ...). This plugin and the Claude Desktop extension provide them. Prefer these when they're available.
+- **The CLI** `scripts/netdoc.py`, relative to this skill's directory: `python3 <skill-dir>/scripts/netdoc.py <command>`. Python 3.9+, nothing else. Commands print JSON. `diagnose` prints a report, or JSON with `--json`.
+
+**Both must run on the user's own computer.** Never run netdoc in a cloud or code-execution sandbox: it would measure the sandbox's network, not the user's. Where only a sandbox is available (for example claude.ai without the extension), tell the user to install the Claude Desktop extension or use Claude Code.
 
 ## Triage flow
 
@@ -36,7 +41,9 @@ All tools are in one CLI, `scripts/netdoc.py`, relative to this skill's director
 
 - `netdoc.py router detect`: identify the router with read-only requests. No login.
 - `netdoc.py secret check <ip>`: says whether a password is stored. It never prints the password.
-- If no password is stored, ask the user to run this themselves: `! python3 <skill-dir>/scripts/netdoc.py secret set <ip>` (the `!` prefix runs it in their terminal). The password then goes to the OS keychain.
+- If no password is stored:
+  - With MCP: call `router_password_setup`. It opens a terminal window where the user types the password into the OS keychain.
+  - In Claude Code: ask the user to run `! python3 <skill-dir>/scripts/netdoc.py secret set <ip>` (the `!` prefix runs it in their terminal).
   - **Never ask the user to paste the password into chat.**
   - **Never put a password on a command line.**
 - `netdoc.py router status [--section cellular|wifi|wan|clients|info|extras]`: normalized status.

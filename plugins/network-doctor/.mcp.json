@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "network-doctor": {
+      "command": "python3",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/skills/network-doctor/scripts/netdoc_mcp.py"]
+    }
+  }
+}

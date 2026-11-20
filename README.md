@@ -32,16 +32,26 @@ Then it logs in to your router, reading the password from your OS keychain, to r
 
 ## Install
 
-In Claude Code:
+**Claude Code**
 
 ```
 /plugin marketplace add dav-ayman/network-doctor
 /plugin install network-doctor@network-doctor
 ```
 
+You get the skill and the MCP tools.
+
+**Claude Desktop**
+
+1. Download `network-doctor-<version>.mcpb` from [Releases](https://github.com/dav-ayman/network-doctor/releases/latest).
+2. Double-click it, or go to Settings > Extensions and drag it in.
+3. Click Install.
+
+It runs locally on your computer, so it can see your real Wi-Fi and router. A cloud sandbox can't.
+
 Then just describe the problem: *"my calls keep breaking up"*, *"why is my Wi-Fi so slow?"*, *"check my 5G router's signal"*.
 
-There's nothing to `pip install`. It's Python 3.9+ standard library only, and runs on macOS (first class) and Linux.
+There's nothing to `pip install`. It's Python 3.9+ standard library only, and runs on macOS (first class) and Linux. On macOS, `python3` comes with the Xcode command line tools (`xcode-select --install`).
 
 ## What it checks
 
@@ -91,7 +101,7 @@ Have one of these routers? Run `netdoc.py router detect` and tell us if it works
 
 ## Safety
 
-- **Passwords never touch the chat.** You store them yourself in the macOS Keychain or Linux Secret Service with `netdoc.py secret set <router-ip>`. Output is masked: passwords, keys, tokens, IMEI/ICCID and serials.
+- **Passwords never touch the chat.** You store them yourself in the macOS Keychain or Linux Secret Service, either with `netdoc.py secret set <router-ip>` or in the terminal window that Claude Desktop opens for you. Output is masked: passwords, keys, tokens, IMEI/ICCID and serials.
 - **Passwords stay with their router.** Each stored password is tied to the router's hardware (MAC) address. Lots of networks use the same gateway IP, but your home password is never offered to the café's 192.168.1.1.
 - **No lockouts.** Routers lock the admin account after 3-10 wrong passwords. A rejected login is remembered, and netdoc refuses to try again until you fix the password and run `router unblock`.
 - **Read-only by default.** Writes show a plan first (current value, then new value). They run only with `--apply` after you approve, save a backup, and come with a one-line revert.

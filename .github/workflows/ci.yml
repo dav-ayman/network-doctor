@@ -33,6 +33,11 @@ jobs:
           python plugins/network-doctor/skills/network-doctor/scripts/netdoc.py --version
           python plugins/network-doctor/skills/network-doctor/scripts/netdoc.py diagnose --demo --no-color
           python plugins/network-doctor/skills/network-doctor/scripts/netdoc.py router drivers > /dev/null
+      - name: Claude Desktop extension builds and its server answers
+        run: |
+          python desktop/build.py
+          mkdir -p /tmp/mcpb && cd /tmp/mcpb && python -c "import zipfile,glob; zipfile.ZipFile(glob.glob('$GITHUB_WORKSPACE/dist/*.mcpb')[0]).extractall('.')"
+          echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | python server/netdoc_mcp.py | grep -q network_diagnose
 
   lint:
     runs-on: ubuntu-latest

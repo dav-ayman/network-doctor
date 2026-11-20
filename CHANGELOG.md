@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.0 (2026-11-20)
 
 First public release.
 
@@ -17,3 +17,6 @@ First public release.
 - Safe writes: plan first, `--apply`, automatic backup, `router revert`.
 - Lockout guard, keychain-only passwords, masked output and masked `capture` files for router-support issues.
 - `--demo` mode with a synthetic network.
+- MCP server (`netdoc_mcp.py`, stdlib only):
+  - Bundled in the Claude Code plugin.
+  - Shipped as a Claude Desktop extension (`.mcpb`).

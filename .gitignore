@@ -5,3 +5,4 @@ __pycache__/
 # local captures / backups never belong in the repo
 *.capture.json
 docs/media/build/
+dist/

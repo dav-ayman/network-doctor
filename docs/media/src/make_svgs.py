@@ -97,6 +97,18 @@ def social() -> str:
 '''
 
 
+def icon() -> str:
+    """512x512 app icon: signal bars and a latency blip on a dark rounded square."""
+    bars = "".join(f'<rect x="{96 + i * 72}" y="{372 - h}" width="52" height="{h}" rx="12" fill="#3fb950"/>'
+                   for i, h in enumerate((70, 130, 190, 250)))
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<rect width="512" height="512" rx="112" fill="#0d1117"/>
+{bars}
+<path d="M70 430 L190 430 L210 410 L230 450 L250 430 L442 430" fill="none" stroke="#e6edf3" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+'''
+
+
 def card(lines, sub="") -> str:
     """1280x720 title card for the hero video."""
     rows = "".join(f'<text x="640" y="{300 + i * 78}" class="h">{t}</text>' for i, t in enumerate(lines))
@@ -116,6 +128,8 @@ if __name__ == "__main__":
         f.write(pipeline())
     with open(os.path.join(OUT, "src", "social.svg"), "w") as f:
         f.write(social())
+    with open(os.path.join(OUT, "src", "icon.svg"), "w") as f:
+        f.write(icon())
     cards = {"card-1": (["“My voice keeps breaking", "in meetings.”"], "network-doctor measures why"),
              "card-2": (["Calls break when the line is busy:"], "latency under load (bufferbloat)"),
              "card-3": (["Then it reads your router", "and plans the fix"], "nothing changes until you approve"),
